@@ -8,6 +8,8 @@
 
 import SwiftUI
 
+let EnableHexViewPosHighlight = true
+
 extension Color {
     init(hex: Int, alpha: Double = 1) {
         let components = (
@@ -176,10 +178,11 @@ struct PillGroup: View {
     //    @State var permanentColors:[Color] = [.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red,.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red]
     @State var permanentColors:[Color] = [Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF), Color(hex: 0xFFFFFF)]
     @State var clickedBkgd:Bool = false
+    @State var doHighlightHexViewCellAt:Int = -1
     var body: some View {
         HStack {
             HStack {
-                Pill(colorSelected: self.$colorSelected, permanentColors: self.$permanentColors, numberSections: 9)
+                Pill(colorSelected: self.$colorSelected, permanentColors: self.$permanentColors, numberSections: 9, doHighlightHexViewCellAt: self.$doHighlightHexViewCellAt)
             }
             .padding(.all, 20)
             .background(self.clickedBkgd ? Color.gray.opacity(0.1) : Color.gray.opacity(0.2))
@@ -202,6 +205,7 @@ struct PillGroup: View {
                                 //                                .background(self.permanentColors[i])
                                 Text("\(self.permanentColors[i].description.lowercased())")
                             }.frame(width: self.clickedBkgd ? 0 : 150, alignment: .leading)
+                                .background(EnableHexViewPosHighlight ? (self.doHighlightHexViewCellAt == i) ? Color.yellow.opacity(0.3).cornerRadius(4) : Color.clear.opacity(0).cornerRadius(0) : Color.clear.opacity(0).cornerRadius(0))
                             Spacer()
                         }
                     }.opacity(self.clickedBkgd ? 0 : 1)
@@ -255,13 +259,14 @@ struct Pill: View {
     @Binding var colorSelected: Color
     @Binding var permanentColors:[Color]
     var numberSections: Int
+    @Binding var doHighlightHexViewCellAt: Int
     var body: some View {
-        HStack(spacing: -10) {
+        HStack(spacing: -1) {
             ForEach(0..<numberSections) { i in
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
                     .fill(self.permanentColors[i])
                     .padding()
-                    .frame(width: 40, height: 70)
+                    .frame(width: 30, height: 70)
                     .background(self.permanentColors[i])
                     
                     
@@ -272,6 +277,11 @@ struct Pill: View {
                     .onTapGesture {
                         if(self.colorSelected != .clear) {self.permanentColors[i] = self.colorSelected}
                         print(self.colorSelected)
+                }
+                .onHover() {hover in
+                    if(hover) {
+                        self.doHighlightHexViewCellAt = i
+                    }
                 }
             }
             //            Group {
@@ -308,7 +318,7 @@ struct ColorPallet:View {
 struct ColorPalletItem:View {
     @State var colors:[Color]
     @State var i:Int
-    @State var hovered: Int = -1
+    @State var hovered: Int = 0
     @Binding var colorSelected: Color
     @State var hovering:Bool = false
     var body: some View {
