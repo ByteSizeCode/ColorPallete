@@ -201,7 +201,7 @@ struct PillGroup: View {
                                     .frame(width: 10, height: 20)
                                 //                                .background(self.permanentColors[i])
                                 Text("\(self.permanentColors[i].description.lowercased())")
-                            }
+                            }.frame(width: self.clickedBkgd ? 0 : 150, alignment: .leading)
                             Spacer()
                         }
                     }.opacity(self.clickedBkgd ? 0 : 1)
