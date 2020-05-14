@@ -9,6 +9,7 @@
 import SwiftUI
 
 let EnableHexViewPosHighlight = true
+let EnableGrayBackground = false
 
 extension Color {
     init(hex: Int, alpha: Double = 1) {
@@ -32,7 +33,6 @@ struct ContentView: View {
     var body: some View {
         VStack {
             //colors: [.green, .gray, .purple, .orange, .pink, .yellow, .blue, .black, .red]
-            //            ScrollView {
             ColorPallets(colorSelected: self.$colorSelected)
             
             Group {
@@ -40,8 +40,10 @@ struct ContentView: View {
                 PillGroup(colorSelected: self.$colorSelected)
             }.offset(y: -130)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .offset(y: -100)
+        .frame(minWidth: 500, maxWidth: .infinity, minHeight: 500, maxHeight: 900)
+        .offset(y: 0)
+        .environment(\.colorScheme, EnableGrayBackground ? .dark : .light )
+        .background(EnableGrayBackground ? Color.gray.opacity(0.6) : Color.clear.opacity(0))
     }
 }
 
@@ -268,8 +270,6 @@ struct Pill: View {
                     .padding()
                     .frame(width: 30, height: 70)
                     .background(self.permanentColors[i])
-                    
-                    
                     //            .fill(Color.clear)
                     //                .padding(10).background(self.permanentColors[i])
                     //            .frame(width: 50, height: 70)
@@ -284,19 +284,6 @@ struct Pill: View {
                     }
                 }
             }
-            //            Group {
-            //                RoundedRectangle(cornerRadius: 25, style: .continuous)
-            //                .fill(Color.clear)
-            //                .padding()
-            //                .frame(width: 40, height: 70)
-            //                    .background(Image("add").resizable().frame(width: 40, height: 70))
-            //                .border(Color.black)
-            //                .offset(x: 0)
-            //                    .onTapGesture {
-            ////                        numberSections += 1
-            //                }
-            //
-            //            }
         }
     }
 }
@@ -311,7 +298,6 @@ struct ColorPallet:View {
                 ColorPalletItem(colors: self.colors, i: index, colorSelected: self.$colorSelected)
             }
         }
-        
     }
 }
 
@@ -328,7 +314,7 @@ struct ColorPalletItem:View {
             .frame(width: 40, height: 70)
             .background(self.colors[i])
             .blur(radius: self.hovered == i ? 3.0 : 1.0)
-            //                                    .rotation3DEffect(.degrees(self.hovering ? -2 : 0), axis: (x: 1, y: 1, z: 1))
+            // .rotation3DEffect(.degrees(self.hovering ? -2 : 0), axis: (x: 1, y: 1, z: 1))
             .border(self.hovered == i ? Color.black : Color.clear)
             .scaleEffect(self.hovered == i ? 1.02 : 1.0)
             .animation(.default)
@@ -336,7 +322,7 @@ struct ColorPalletItem:View {
                 print("Mouse hover: \(hover)")
                 if hover {
                     self.hovering = true
-                    self.hovered = self.i    // << here !!
+                    self.hovered = self.i //Save location
                 } else {
                     self.hovered = -1  // reset
                     self.hovering = false
